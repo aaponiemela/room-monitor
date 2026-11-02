@@ -66,3 +66,22 @@ h1 {
   background: #442725;
   border-radius: 8px;
 }
+
+.status {
+  margin-top: 24px;
+  padding: 12px 16px;
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+.status-fresh {
+  color: #96e6c8;
+  background: #18372e;
+  border-color: #356b56;
+}
+
+.status-stale {
+  color: #ffdc91;
+  background: #3b301b;
+  border-color: #80632b;
+}
