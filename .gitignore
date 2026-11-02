@@ -6,3 +6,5 @@ __pycache__/
 *.sqlite3
 *.db
 .vscode/
+node_modules/
+dist/
