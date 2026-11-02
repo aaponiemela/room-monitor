@@ -10,6 +10,8 @@ Python, and a planned React frontend.
 - Python serial reader with JSON parsing
 - SQLite storage with UTC reception timestamps
 - Measurement validation before storage
+- FastAPI endpoint for the latest stored measurement
+- Interactive API documentation
 
 ## Run the serial reader
 
@@ -22,6 +24,16 @@ python -m venv .venv
 ```
 
 Replace COM6 with your board's serial port.
+
+## Run the API
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn api:app --reload
+```
+
+Open http://127.0.0.1:8000/docs to explore the API.
+
+Run the serial reader in a separate terminal to collect new measurements.
 
 ## Planned features
 
