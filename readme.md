@@ -8,6 +8,8 @@ Python, and a planned React frontend.
 - Temperature, relative humidity, and atmospheric pressure readings
 - Newline-delimited JSON output over USB serial
 - Python serial reader with JSON parsing
+- SQLite storage with UTC reception timestamps
+- Measurement validation before storage
 
 ## Run the serial reader
 
@@ -23,7 +25,6 @@ Replace COM6 with your board's serial port.
 
 ## Planned features
 
-- SQLite measurement history
 - FastAPI backend
 - React and TypeScript dashboard
 - Demo mode without hardware
