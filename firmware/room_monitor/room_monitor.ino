@@ -7,6 +7,10 @@ Sensor pressure(SENSOR_ID_BARO);
 const unsigned long SEND_INTERVAL_MS = 1000;
 unsigned long lastSendTime = 0;
 
+bool temperatureReceived = false;
+bool humidityReceived = false;
+bool pressureReceived = false;
+
 void setup() {
   Serial.begin(115200);
 
@@ -22,8 +26,29 @@ void setup() {
 }
 
 void loop() {
-  // Keep processing sensor data without blocking the loop.
   BHY2.update();
+
+  if (temperature.dataAvailable()) {
+    temperatureReceived = true;
+    temperature.clearDataAvailFlag();
+  }
+
+  if (humidity.dataAvailable()) {
+    humidityReceived = true;
+    humidity.clearDataAvailFlag();
+  }
+
+  if (pressure.dataAvailable()) {
+    pressureReceived = true;
+    pressure.clearDataAvailFlag();
+  }
+
+  // Wait until all sensors have provided their first reading.
+  if (!temperatureReceived ||
+      !humidityReceived ||
+      !pressureReceived) {
+    return;
+  }
 
   const unsigned long now = millis();
 
@@ -31,13 +56,9 @@ void loop() {
     return;
   }
 
-  // Send only after every sensor has provided new data.
-  if (!temperature.dataAvailable() ||
-      !humidity.dataAvailable() ||
-      !pressure.dataAvailable()) {
-    return;
-  }
+  lastSendTime = now;
 
+  // Send the latest available values.
   Serial.print("{\"uptime_ms\":");
   Serial.print(now);
 
@@ -51,10 +72,4 @@ void loop() {
   Serial.print(pressure.value(), 2);
 
   Serial.println("}");
-
-  temperature.clearDataAvailFlag();
-  humidity.clearDataAvailFlag();
-  pressure.clearDataAvailFlag();
-
-  lastSendTime = now;
 }
