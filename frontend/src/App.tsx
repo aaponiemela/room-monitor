@@ -12,7 +12,16 @@ type Measurement = {
 
 function App() {
   const [measurement, setMeasurement] = useState<Measurement | null>(null)
+  const [now, setNow] = useState(() => Date.now())
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+  const timer = setInterval(() => {
+    setNow(Date.now())
+  }, 1000)
+
+  return () => clearInterval(timer)
+}, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -47,11 +56,18 @@ function App() {
 
     void fetchMeasurement()
 
+
     return () => {
       controller.abort()
       clearTimeout(timer)
     }
   }, [])
+
+  const measurementAgeMs = measurement
+  ? now - new Date(measurement.received_at).getTime()
+  : null
+
+const isStale = measurementAgeMs !== null && measurementAgeMs > 15_000
 
   return (
     <main className="dashboard">
@@ -67,6 +83,12 @@ function App() {
 
       {measurement && (
         <>
+        <p className={`status ${isStale ? 'status-stale' : 'status-fresh'}`}>
+  {isStale
+    ? 'No recent measurements — check the sensor reader.'
+    : 'Measurements received recently'}
+</p>
+
           <section className="metrics" aria-label="Latest measurements">
             <article className="metric">
               <h2>Temperature</h2>
