@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import TemperatureHistory from './TemperatureHistory'
 
 type Measurement = {
   id: number
@@ -114,7 +115,7 @@ const isStale = measurementAgeMs !== null && measurementAgeMs > 15_000
               </p>
             </article>
           </section>
-
+          <TemperatureHistory latestId={measurement.id} />
           <p className="updated">
             Last measurement received:{' '}
             <time dateTime={measurement.received_at}>

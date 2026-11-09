@@ -45,3 +45,34 @@ def get_latest_measurement():
         )
 
     return dict(measurement)
+
+
+@app.get("/api/measurements/history")
+def get_measurement_history():
+    if not DATABASE_PATH.is_file():
+        raise HTTPException(
+            status_code=503,
+            detail="Database not found. Run the serial reader first.",
+        )
+
+    database_uri = DATABASE_PATH.as_uri() + "?mode=ro"
+
+    try:
+        with closing(sqlite3.connect(database_uri, uri=True)) as database:
+            database.row_factory = sqlite3.Row
+
+            measurements = database.execute("""
+                SELECT id, received_at, uptime_ms,
+                       temperature_c, humidity_pct, pressure_hpa
+                FROM measurements
+                ORDER BY id DESC
+                LIMIT 60
+            """).fetchall()
+
+    except sqlite3.Error as error:
+        raise HTTPException(
+            status_code=503,
+            detail="Measurement database is unavailable.",
+        ) from error
+
+    return [dict(measurement) for measurement in reversed(measurements)]
