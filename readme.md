@@ -15,7 +15,7 @@ in SQLite, and a React dashboard displays the latest readings and recent history
 - History chart with a selector for temperature, humidity, and pressure
 - Warning when no measurements have arrived for more than 15 seconds
 
-![Arduino Nicla Sense ME](docs/arduino.png)
+
 
 ## Run locally on Windows
 
