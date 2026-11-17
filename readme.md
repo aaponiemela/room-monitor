@@ -14,7 +14,7 @@ in SQLite, and a React dashboard displays the latest readings and recent history
 - React and TypeScript dashboard with automatically refreshed readings
 - History chart with a selector for temperature, humidity, and pressure
 - Warning when no measurements have arrived for more than 15 seconds
-
+- Demo mode with simulated measurements and a visible demo notice
 
 
 ## Run locally on Windows
@@ -58,6 +58,49 @@ npm.cmd run dev
 Open the address printed by Vite, usually [http://localhost:5173](http://localhost:5173).
 The Vite development server forwards `/api` requests to FastAPI.
 
-## Planned features
 
-- Demo mode with sample data so the dashboard can be tried without hardware
+## Run the demo without hardware
+
+Install the Python and frontend dependencies using the setup instructions above.
+
+Open three terminals. Run the first two commands from the repository root.
+
+### 1. Generate simulated measurements
+
+```powershell
+.\.venv\Scripts\python.exe demo_generator.py
+```
+
+Measurements are saved to `demo.sqlite3`.
+
+### 2. Start the API with the demo database
+
+Stop any running API server first. In a PowerShell terminal, run:
+
+```powershell
+$env:ROOM_MONITOR_DB = "demo.sqlite3"
+.\.venv\Scripts\python.exe -m uvicorn api:app --reload
+```
+
+### 3. Start the dashboard
+
+```powershell
+cd frontend
+npm.cmd run dev
+```
+
+Open the address printed by Vite, usually http://localhost:5173.
+The dashboard displays “Demo mode — simulated measurements”.
+
+### Return to hardware measurements
+
+Stop the demo generator and API with Ctrl+C in their terminals.
+
+In the API terminal, clear the database setting and restart the API:
+
+```powershell
+Remove-Item Env:ROOM_MONITOR_DB
+.\.venv\Scripts\python.exe -m uvicorn api:app --reload
+```
+
+Start the serial reader in another terminal and refresh the dashboard.
