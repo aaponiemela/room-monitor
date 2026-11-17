@@ -15,6 +15,8 @@ in SQLite, and a React dashboard displays the latest readings and recent history
 - History chart with a selector for temperature, humidity, and pressure
 - Warning when no measurements have arrived for more than 15 seconds
 - Demo mode with simulated measurements and a visible demo notice
+- 19 automated backend tests covering validation, storage, and API endpoints
+- GitHub Actions workflows for backend tests, frontend linting, and builds
 
 
 ## Run locally on Windows
@@ -104,3 +106,22 @@ Remove-Item Env:ROOM_MONITOR_DB
 ```
 
 Start the serial reader in another terminal and refresh the dashboard.
+
+
+## Run checks
+
+From the repository root, run the backend tests:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -v
+```
+
+Run frontend checks:
+
+```powershell
+cd frontend
+npm.cmd run lint
+npm.cmd run build
+```
+
+GitHub Actions runs these checks automatically on pushes and pull requests.
