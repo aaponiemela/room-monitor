@@ -1,12 +1,22 @@
 import sqlite3
 from contextlib import closing
 from pathlib import Path
+import os
 
 from fastapi import FastAPI, HTTPException
 
 app = FastAPI(title="Room Monitor API")
 
-DATABASE_PATH = Path(__file__).resolve().parent / "measurements.sqlite3"
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+DATABASE_PATH = Path(
+    os.environ.get("ROOM_MONITOR_DB", "measurements.sqlite3")
+)
+
+if not DATABASE_PATH.is_absolute():
+    DATABASE_PATH = PROJECT_ROOT / DATABASE_PATH
+
+DATABASE_PATH = DATABASE_PATH.resolve()
 
 
 @app.get("/api/measurements/latest")
@@ -76,3 +86,9 @@ def get_measurement_history():
         ) from error
 
     return [dict(measurement) for measurement in reversed(measurements)]
+
+@app.get("/api/status")
+def get_status():
+    return {
+        "mode": "demo" if DATABASE_PATH.name == "demo.sqlite3" else "live"
+    }

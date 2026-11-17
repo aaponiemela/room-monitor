@@ -15,6 +15,41 @@ function App() {
   const [measurement, setMeasurement] = useState<Measurement | null>(null)
   const [now, setNow] = useState(() => Date.now())
   const [error, setError] = useState<string | null>(null)
+  const [mode, setMode] = useState<'demo' | 'live' | null>(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    let timer: ReturnType<typeof setTimeout> | undefined
+
+    async function loadMode() {
+      try {
+        const response = await fetch('/api/status', {
+          signal: controller.signal,
+        })
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+        const status = await response.json()
+
+        if (status.mode !== 'demo' && status.mode !== 'live') {
+          throw new Error('Invalid API mode')
+        }
+
+        if (!controller.signal.aborted) setMode(status.mode)
+      } catch {
+        if (!controller.signal.aborted) {
+          timer = setTimeout(loadMode, 2000)
+        }
+      }
+    }
+
+    void loadMode()
+
+    return () => {
+      controller.abort()
+      clearTimeout(timer)
+    }
+  }, [])
 
   useEffect(() => {
   const timer = setInterval(() => {
@@ -77,6 +112,12 @@ const isStale = measurementAgeMs !== null && measurementAgeMs > 15_000
         <h1>Room Monitor</h1>
         <p className="subtitle">Your room, measured.</p>
       </header>
+
+      {mode === 'demo' && (
+        <p className="demo-notice">
+          Demo mode — simulated measurements
+        </p>
+      )}
 
       {error && <p role="alert" className="error">{error}</p>}
 
